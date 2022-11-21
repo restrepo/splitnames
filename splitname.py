@@ -5,7 +5,8 @@ def split_names(s,exceptions=['GIL','LEW','LIZ','PAZ','REY','RIO','ROA','RUA','S
     
     [SMALL_CONECTORS] FIRST_LAST_NAME [SMALL_CONECTORS] [SECOND_LAST_NAME] NAMES
     
-    If len(s) < 4 → Foreign name assumed with single last name on it
+    * If len(s) == 2 → Foreign name assumed with single last name on it
+    * If len(s) == 3 → Colombian name assumed two last mames and one first name
     
     Add short last names to `exceptions` list if necessary
     
@@ -19,13 +20,15 @@ def split_names(s,exceptions=['GIL','LEW','LIZ','PAZ','REY','RIO','ROA','RUA','S
         s='RESTREPO QUINTERO DIEGO ALEJANDRO'
         s='RESTREPO ZEA JAIRO HUMBERTO'
         s='JIMENEZ DEL RIO MARLEN'        
-        s='ROMANO ANTONIO ENEA'
-        s='NARDI ENRICO'
-    Fails with more than 2 last names:
+        s='RESTREPO FERNÁNDEZ SARA' # Colombian: two LAST_NAMES NAME
+        s='NARDI ENRICO' # Foreing
+    Fails:
     ----
-        s='RANGEL MARTINEZ VILLAL ANDRES MAURICIO'
+        s='RANGEL MARTINEZ VILLAL ANDRES MAURICIO' # more than 2 last names
+        s='ROMANO ANTONIO ENEA' # Foreing → LAST_NAME NAMES
     """
     s=s.title()
+    exceptions=[e.title() for e in exceptions]
     sl=re.sub('(\s\w{1,3})\s',r'\1-',s,re.UNICODE)
     sl=re.sub('(\s\w{1,3}\-\w{1,3})\s',r'\1-',sl,re.UNICODE)
     sl=re.sub('^(\w{1,3})\s',r'\1-' ,sl,re.UNICODE)
@@ -39,6 +42,7 @@ def split_names(s,exceptions=['GIL','LEW','LIZ','PAZ','REY','RIO','ROA','RUA','S
             sl=sl.replace('{}-'.format(e),'{} '.format(e))
             
     #if sl.find('-')>-1:
+    print(sl)
     sll=[s.replace('-',' ') for s in sl.split()]
     if len(s.split())==2:
         sll=[s.split()[0]]+['']+[s.split()[1]]
